@@ -1,0 +1,107 @@
+<div class="product-management-container">
+  <!-- Header Toolbar -->
+  <mat-toolbar class="management-toolbar" color="primary">
+    <div class="toolbar-content">
+      <div class="toolbar-left">
+        <mat-icon>store</mat-icon>
+        <span class="app-title">Contingency POS</span>
+      </div>
+
+      <div class="toolbar-right">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="appMenu"
+          aria-label="App menu"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="d-flex p-2 justify-content-center gap-2">
+      <button
+        mat-raised-button
+        color="accent"
+        [disabled]="productService.productCount() === 0"
+        (click)="goToQuickOrder()"
+        class="quick-order-btn"
+      >
+        <mat-icon>flash_on</mat-icon>
+        Quick Order
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        routerLink="/orders"
+        class="orders-btn"
+      >
+        <mat-icon>receipt_long</mat-icon>
+        Orders
+      </button>
+      <button
+        mat-raised-button
+        color="warn"
+        routerLink="/scraper"
+        class="scraper-btn"
+      >
+        <mat-icon>web</mat-icon>
+        Scraper
+      </button>
+    </div>
+
+    <!-- Product List -->
+    <app-product-list></app-product-list>
+  </div>
+
+  <!-- Floating Action Button -->
+  <button
+    mat-fab
+    color="primary"
+    class="fab-add-product"
+    (click)="openProductForm()"
+    aria-label="Add new product"
+  >
+    <mat-icon>add</mat-icon>
+  </button>
+
+  <!-- App Menu -->
+  <mat-menu #appMenu="matMenu">
+    <button mat-menu-item (click)="loadDemoData()">
+      <mat-icon>download</mat-icon>
+      Load Demo Data
+    </button>
+    <button mat-menu-item (click)="loadDitschProducts()">
+      <mat-icon>language</mat-icon>
+      Load Ditsch Products
+    </button>
+    <button mat-menu-item (click)="clearData()">
+      <mat-icon>clear_all</mat-icon>
+      Clear All Products
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="exportData()">
+      <mat-icon>file_download</mat-icon>
+      Export Data
+    </button>
+    <button mat-menu-item (click)="importData()">
+      <mat-icon>file_upload</mat-icon>
+      Import Data
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item routerLink="/scraper">
+      <mat-icon>web</mat-icon>
+      Web Scraper
+    </button>
+    <button mat-menu-item>
+      <mat-icon>settings</mat-icon>
+      Settings
+    </button>
+    <button mat-menu-item>
+      <mat-icon>help</mat-icon>
+      Help
+    </button>
+  </mat-menu>
+</div>

@@ -1,0 +1,404 @@
+<div class="orders-container">
+  <!-- Header -->
+  <mat-toolbar class="orders-header" >
+    <div class="header-content">
+      <div class="header-left">
+        <mat-icon>receipt_long</mat-icon>
+        <h1>Orders</h1>
+        <span class="order-count">({{ filteredOrders().length }} orders)</span>
+      </div>
+      <div class="header-actions">
+        <button mat-raised-button color="white" routerLink="/management">
+          <mat-icon>arrow_back</mat-icon>
+          Back
+        </button>
+        <button mat-raised-button color="accent" (click)="exportOrders()">
+
+          <mat-icon>download</mat-icon>
+          Export
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <!-- Summary Cards -->
+  <div class="summary-section">
+    <div class="summary-grid">
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="summary-icon">
+            <mat-icon>receipt</mat-icon>
+          </div>
+          <div class="summary-content">
+            <h3>Total Orders</h3>
+            <p class="summary-value">{{ summaryStats().totalOrders }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="summary-icon revenue">
+            <mat-icon>monetization_on</mat-icon>
+          </div>
+          <div class="summary-content">
+            <h3>Total Revenue</h3>
+            <p class="summary-value">${{ summaryStats().totalRevenue.toFixed(2) }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="summary-icon average">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <div class="summary-content">
+            <h3>Average Order</h3>
+            <p class="summary-value">${{ summaryStats().averageOrderValue.toFixed(2) }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="summary-icon completed">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="summary-content">
+            <h3>Completed</h3>
+            <p class="summary-value">{{ summaryStats().statusCounts['completed'] || 0 }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="filters-form">
+        <div class="filters-row">
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Start Date</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>End Date</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="all">All Statuses</mat-option>
+              <mat-option value="draft">Draft</mat-option>
+              <mat-option value="pending_payment">Pending Payment</mat-option>
+              <mat-option value="paid">Paid</mat-option>
+              <mat-option value="preparing">Preparing</mat-option>
+              <mat-option value="ready">Ready</mat-option>
+              <mat-option value="completed">Completed</mat-option>
+              <mat-option value="cancelled">Cancelled</mat-option>
+              <mat-option value="refunded">Refunded</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Search</mat-label>
+            <input matInput formControlName="search" placeholder="Order #, customer, or product..." autocomplete="off">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <button mat-stroked-button type="button" (click)="clearFilters()" class="clear-filters-btn">
+            <mat-icon>clear</mat-icon>
+            <span class="clear-text">Clear</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Top Products -->
+  @if (summaryStats().topProducts.length > 0) {
+    <mat-card class="top-products-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>star</mat-icon>
+          Top Products
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="top-products-grid">
+          @for (product of summaryStats().topProducts; track product.name) {
+            <div class="product-item">
+              <div class="product-name">{{ product.name }}</div>
+              <div class="product-stats">
+                <span class="quantity">{{ product.quantity }} sold</span>
+                <span class="revenue">${{ product.revenue.toFixed(2) }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Orders Table -->
+  <mat-card class="orders-table-card">
+    <mat-card-content>
+      @if (filteredOrders().length > 0) {
+        <!-- Desktop Table -->
+        <div class="table-container desktop-only">
+          <table mat-table [dataSource]="filteredOrders()" class="orders-table">
+            <!-- Order Number Column -->
+            <ng-container matColumnDef="orderNumber">
+              <th mat-header-cell *matHeaderCellDef>Order #</th>
+              <td mat-cell *matCellDef="let order">
+                <div class="order-number">{{ order.orderNumber }}</div>
+              </td>
+            </ng-container>
+
+            <!-- Customer Column -->
+            <ng-container matColumnDef="customer">
+              <th mat-header-cell *matHeaderCellDef>Customer</th>
+              <td mat-cell *matCellDef="let order">
+                @if (order.customer) {
+                  <div class="customer-info">
+                    <div class="customer-name">{{ order.customer.name }}</div>
+                    @if (order.customer.email) {
+                      <div class="customer-email">{{ order.customer.email }}</div>
+                    }
+                  </div>
+                } @else {
+                  <span class="no-customer">Walk-in customer</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Items Column -->
+            <ng-container matColumnDef="items">
+              <th mat-header-cell *matHeaderCellDef>Items</th>
+              <td mat-cell *matCellDef="let order">
+                <div class="items-summary">{{ getOrderItemsSummary(order.items) }}</div>
+                <div class="items-preview">
+                  @for (item of order.items.slice(0, 2); track item.id) {
+                    <span class="item-preview">{{ item.product.name }} ({{ item.quantity }})</span>
+                  }
+                  @if (order.items.length > 2) {
+                    <span class="more-items">+{{ order.items.length - 2 }} more</span>
+                  }
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Total Column -->
+            <ng-container matColumnDef="total">
+              <th mat-header-cell *matHeaderCellDef>Total</th>
+              <td mat-cell *matCellDef="let order">
+                <div class="order-total">${{ order.total.toFixed(2) }}</div>
+                @if (order.tax > 0) {
+                  <div class="tax-info">+${{ order.tax.toFixed(2) }} tax</div>
+                }
+                @if (order.amountReceived && order.amountReceived > 0) {
+                  <div class="payment-info">
+                    <div class="received">Received: ${{ order.amountReceived.toFixed(2) }}</div>
+                    @if (order.changeAmount && order.changeAmount > 0) {
+                      <div class="change">Change: ${{ order.changeAmount.toFixed(2) }}</div>
+                    }
+                  </div>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let order">
+                <mat-chip [color]="getStatusColor(order.status)" selected>
+                  <mat-icon>{{ getStatusIcon(order.status) }}</mat-icon>
+                  {{ order.status.replace('_', ' ') | titlecase }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Check In Column -->
+            <ng-container matColumnDef="check_in">
+              <th mat-header-cell *matHeaderCellDef>Check In</th>
+              <td mat-cell *matCellDef="let order">
+                <button 
+                  mat-icon-button 
+                  [color]="order.check_in ? 'primary' : 'default'"
+                  (click)="toggleCheckIn(order.id || '', order.check_in || false)"
+                  [matTooltip]="order.check_in ? 'Checked In' : 'Not Checked In'"
+                >
+                  <mat-icon>{{ order.check_in ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <!-- Date Column -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>Date</th>
+              <td mat-cell *matCellDef="let order">
+                <div class="order-date">{{ formatDate(order.createdAt) }}</div>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let order">
+                <button mat-icon-button (click)="viewOrderDetails(order)" matTooltip="View Details">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+
+        <!-- Mobile Order Cards -->
+        <div class="mobile-orders mobile-only">
+          @for (order of filteredOrders(); track order.id) {
+            <mat-card class="order-card">
+              <mat-card-content>
+                <div class="order-card-header">
+                  <div class="order-main-info">
+                    <div class="order-number">{{ order.orderNumber }}</div>
+                    <div class="order-date">{{ formatDate(order.createdAt) }}</div>
+                  </div>
+                  <div class="order-total-mobile">${{ order.total.toFixed(2) }}</div>
+                </div>
+                
+                <div class="order-card-details" [class.expanded]="expandedOrders()[order.id || '']">
+                  <div class="customer-section">
+                    @if (order.customer) {
+                      <div class="customer-info">
+                        <mat-icon>person</mat-icon>
+                        <span>{{ order.customer.name }}</span>
+                      </div>
+                    } @else {
+                      <div class="customer-info">
+                        <mat-icon>person_off</mat-icon>
+                        <span>Walk-in customer</span>
+                      </div>
+                    }
+                  </div>
+                  
+                  <div class="items-section">
+                    <div class="items-header">
+                      <mat-icon>shopping_cart</mat-icon>
+                      <span>{{ getOrderItemsSummary(order.items) }}</span>
+                    </div>
+                    <div class="items-list">
+                      @for (item of order.items; track item.id) {
+                        <div class="item-row">
+                          <span class="item-name">{{ item.product.name }}</span>
+                          <span class="item-quantity">×{{ item.quantity }}</span>
+                          <span class="item-price">${{ item.totalPrice.toFixed(2) }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  
+                  <div class="order-status-section">
+                    <mat-chip [color]="getStatusColor(order.status)" selected>
+                      <mat-icon>{{ getStatusIcon(order.status) }}</mat-icon>
+                      {{ order.status.replace('_', ' ') | titlecase }}
+                    </mat-chip>
+                  </div>
+                  
+                  <div class="check-in-section">
+                    <div class="check-in-label">
+                      <mat-icon>how_to_reg</mat-icon>
+                      <span>Check In Status</span>
+                    </div>
+                    <button 
+                      mat-stroked-button 
+                      [color]="order.check_in ? 'primary' : 'default'"
+                      (click)="toggleCheckIn(order.id || '', order.check_in || false)"
+                      class="check-in-button"
+                    >
+                      <mat-icon>{{ order.check_in ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                      {{ order.check_in ? 'Checked In' : 'Not Checked In' }}
+                    </button>
+                  </div>
+                  
+                  @if (order.tax > 0) {
+                    <div class="tax-section">
+                      <span>Tax: ${{ order.tax.toFixed(2) }}</span>
+                    </div>
+                  }
+                  
+                  @if (order.amountReceived && order.amountReceived > 0) {
+                    <div class="payment-calculation-section">
+                      <div class="payment-calculation-header">
+                        <mat-icon>payments</mat-icon>
+                        <span>Payment Details</span>
+                      </div>
+                      <div class="payment-calculation-details">
+                        <div class="payment-row">
+                          <span class="label">Total Due:</span>
+                          <span class="amount">${{ order.total.toFixed(2) }}</span>
+                        </div>
+                        <div class="payment-row">
+                          <span class="label">Amount Received:</span>
+                          <span class="amount received">${{ order.amountReceived.toFixed(2) }}</span>
+                        </div>
+                        @if (order.changeAmount && order.changeAmount > 0) {
+                          <div class="payment-row change">
+                            <span class="label">Change Given:</span>
+                            <span class="amount change">${{ order.changeAmount.toFixed(2) }}</span>
+                          </div>
+                        }
+                        @if (order.amountReceived === order.total) {
+                          <div class="payment-row exact">
+                            <span class="label">Payment Type:</span>
+                            <span class="amount exact">Exact Payment</span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                  
+                  <div class="order-actions">
+                    <button mat-stroked-button (click)="viewOrderDetails(order)">
+                      <mat-icon>visibility</mat-icon>
+                      View Details
+                    </button>
+                  </div>
+                </div>
+                
+                <button 
+                  mat-icon-button 
+                  class="expand-button"
+                  (click)="toggleOrderExpansion(order.id || '')"
+                  [attr.aria-label]="expandedOrders()[order.id || ''] ? 'Collapse order details' : 'Expand order details'"
+                >
+                  <mat-icon>{{ expandedOrders()[order.id || ''] ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </button>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <mat-icon class="empty-state-icon">receipt_long</mat-icon>
+          <h3>No orders found</h3>
+          <p>No orders match your current filters. Try adjusting your search criteria.</p>
+          <button mat-raised-button color="primary" (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Clear Filters
+          </button>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div> 

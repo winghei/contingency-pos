@@ -1,0 +1,262 @@
+.scraper-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.config-section,
+.scraping-section,
+.results-section,
+.history-section {
+  padding: 20px 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-row mat-form-field {
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.status-section {
+  margin-top: 20px;
+}
+
+.progress-section {
+  margin: 20px 0;
+}
+
+.progress-text {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.error-card {
+  margin: 16px 0;
+  background-color: #ffebee;
+}
+
+.error-card mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #d32f2f;
+}
+
+.result-data {
+  margin: 16px 0;
+}
+
+.result-data pre {
+  background-color: #f5f5f5;
+  padding: 16px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.product-actions {
+  margin-top: 16px;
+}
+
+.error-content {
+  color: #d32f2f;
+  margin: 16px 0;
+}
+
+.metadata {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.metadata p {
+  margin: 4px 0;
+}
+
+.no-results,
+.no-history {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.no-results mat-icon,
+.no-history mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.history-actions {
+  margin-bottom: 16px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  margin-bottom: 8px;
+  transition: box-shadow 0.2s ease;
+}
+
+.history-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.url {
+  font-weight: 500;
+  color: #1976d2;
+  word-break: break-all;
+  flex: 1;
+  margin-right: 12px;
+}
+
+.history-details {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #666;
+  flex-wrap: wrap;
+}
+
+mat-card-header {
+  margin-bottom: 16px;
+}
+
+mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mat-mdc-tab-group {
+  margin-top: 16px;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .scraper-container {
+    padding: 10px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .history-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .history-details {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+// Dark theme support
+@media (prefers-color-scheme: dark) {
+  .result-data pre {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border-color: #444;
+  }
+
+  .metadata {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+  }
+
+  .error-card {
+    background-color: #3e2723;
+  }
+
+  .no-results,
+  .no-history {
+    color: #b0b0b0;
+  }
+}
+
+// Animation for progress bar
+.mat-mdc-progress-bar {
+  transition: all 0.3s ease;
+}
+
+// Custom scrollbar for code blocks
+.result-data pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+.result-data pre::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.result-data pre::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.result-data pre::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+// Focus states for accessibility
+.mat-mdc-form-field:focus-within {
+  .mat-mdc-form-field-focus-overlay {
+    opacity: 1;
+  }
+}
+
+// Loading states
+.scraping-section .mat-mdc-button:disabled {
+  opacity: 0.6;
+}
+
+// Success/error states
+.mat-chip.mat-mdc-chip.mat-mdc-chip-selected.mat-mdc-chip-accent {
+  background-color: #4caf50;
+  color: white;
+}
+
+.mat-chip.mat-mdc-chip.mat-mdc-chip-selected.mat-mdc-chip-warn {
+  background-color: #f44336;
+  color: white;
+} 

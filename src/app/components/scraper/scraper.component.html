@@ -1,0 +1,283 @@
+<div class="scraper-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>web</mat-icon>
+        Web Scraper with Gemini AI
+      </mat-card-title>
+      <mat-card-subtitle>
+        Extract data from web pages using Google's Gemini API
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-tab-group>
+        <!-- Configuration Tab -->
+        <mat-tab label="Configuration">
+          <div class="config-section">
+            <form [formGroup]="configForm" (ngSubmit)="saveConfig()">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Gemini API Key</mat-label>
+                <input 
+                  matInput 
+                  formControlName="apiKey" 
+                  type="password"
+                  placeholder="Enter your Gemini API key"
+                />
+                <mat-hint>
+                  Get your API key from 
+                  <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a>
+                </mat-hint>
+              </mat-form-field>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Model</mat-label>
+                  <mat-select formControlName="model">
+                    <mat-option value="gemini-1.5-flash">Gemini 1.5 Flash</mat-option>
+                    <mat-option value="gemini-1.5-pro">Gemini 1.5 Pro</mat-option>
+                    <mat-option value="gemini-pro">Gemini Pro</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Max Tokens</mat-label>
+                  <input matInput type="number" formControlName="maxTokens" min="1" max="8192" />
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Temperature</mat-label>
+                  <input matInput type="number" formControlName="temperature" min="0" max="2" step="0.1" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Top P</mat-label>
+                  <input matInput type="number" formControlName="topP" min="0" max="1" step="0.1" />
+                </mat-form-field>
+              </div>
+
+              <div class="form-actions">
+                <button 
+                  mat-raised-button 
+                  color="primary" 
+                  type="submit"
+                  [disabled]="configForm.invalid || savingConfig()"
+                >
+                  <mat-icon>save</mat-icon>
+                  Save Configuration
+                </button>
+              </div>
+            </form>
+
+            <div class="status-section">
+              <mat-chip-set>
+                                  <mat-chip 
+                    [color]="isConfigured() ? 'accent' : 'warn'"
+                  >
+                    <mat-icon>{{ isConfigured() ? 'check_circle' : 'error' }}</mat-icon>
+                    {{ isConfigured() ? 'Configured' : 'Not Configured' }}
+                  </mat-chip>
+              </mat-chip-set>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Scraping Tab -->
+        <mat-tab label="Scraping">
+          <div class="scraping-section">
+            <form [formGroup]="scrapingForm" (ngSubmit)="startScraping()">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>URL to Scrape</mat-label>
+                <input 
+                  matInput 
+                  formControlName="url" 
+                  placeholder="https://example.com/product-page"
+                />
+                <mat-icon matSuffix>link</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Instructions (Optional)</mat-label>
+                <textarea 
+                  matInput 
+                  formControlName="instructions" 
+                  rows="3"
+                  placeholder="Describe what data you want to extract..."
+                ></textarea>
+              </mat-form-field>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Template</mat-label>
+                  <mat-select formControlName="templateId">
+                    <mat-option value="">Custom</mat-option>
+                    @for (template of templates(); track template.id) {
+                      <mat-option [value]="template.id">{{ template.name }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Timeout (ms)</mat-label>
+                  <input matInput type="number" formControlName="timeout" min="1000" max="30000" />
+                </mat-form-field>
+              </div>
+
+              <div class="form-actions">
+                <button 
+                  mat-raised-button 
+                  color="primary" 
+                  type="submit"
+                  [disabled]="scrapingForm.invalid || !canScrape() || isScraping()"
+                >
+                  <mat-icon>scrape</mat-icon>
+                  Start Scraping
+                </button>
+
+                <button 
+                  mat-button 
+                  type="button"
+                  (click)="extractProduct()"
+                  [disabled]="scrapingForm.invalid || !canScrape() || isScraping()"
+                >
+                  <mat-icon>shopping_cart</mat-icon>
+                  Extract Product
+                </button>
+              </div>
+            </form>
+
+            <!-- Progress Bar -->
+            @if (isScraping()) {
+              <div class="progress-section">
+                <mat-progress-bar 
+                  [value]="progress()" 
+                  mode="determinate"
+                ></mat-progress-bar>
+                <p class="progress-text">
+                  Scraping {{ currentUrl() || '...' }} ({{ progress() }}%)
+                </p>
+              </div>
+            }
+
+            <!-- Error Display -->
+            @if (error()) {
+              <mat-card class="error-card">
+                <mat-card-content>
+                  <mat-icon color="warn">error</mat-icon>
+                  <span>{{ error() }}</span>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- Results Tab -->
+        <mat-tab label="Results">
+          <div class="results-section">
+            @if (lastResult(); as result) {
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>data_object</mat-icon>
+                    Scraped Data
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    {{ result.success ? 'Success' : 'Failed' }}
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                @if (result.success && result.data) {
+                  <div class="result-data">
+                    <pre>{{ formatJson(result.data) }}</pre>
+                    
+                    @if (isProductData(result.data)) {
+                      <div class="product-actions">
+                        <button 
+                          mat-raised-button 
+                          color="accent"
+                          (click)="addProductFromScrapedData(result.data)"
+                        >
+                          <mat-icon>add_shopping_cart</mat-icon>
+                          Add as Product
+                        </button>
+                      </div>
+                    }
+                  </div>
+                }
+
+                @if (result.error) {
+                  <div class="error-content">
+                    <p><strong>Error:</strong> {{ result.error }}</p>
+                  </div>
+                }
+
+                @if (result.metadata) {
+                  <div class="metadata">
+                    <p><strong>URL:</strong> {{ result.metadata.url }}</p>
+                    <p><strong>Processing Time:</strong> {{ result.metadata.processingTime }}ms</p>
+                    <p><strong>Model:</strong> {{ result.metadata.modelUsed }}</p>
+                    <p><strong>Timestamp:</strong> {{ formatTimestamp(result.metadata.timestamp) }}</p>
+                  </div>
+                }
+              </mat-expansion-panel>
+            } @else {
+              <div class="no-results">
+                <mat-icon>info</mat-icon>
+                <p>No scraping results yet. Start a scraping job to see results here.</p>
+              </div>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- History Tab -->
+        <mat-tab label="History">
+          <div class="history-section">
+            @if (history().length > 0) {
+              <div class="history-actions">
+                <button 
+                  mat-button 
+                  color="warn"
+                  (click)="clearHistory()"
+                >
+                  <mat-icon>clear_all</mat-icon>
+                  Clear History
+                </button>
+              </div>
+
+              <div class="history-list">
+                @for (item of history(); track item.id) {
+                  <mat-card class="history-item">
+                    <mat-card-content>
+                      <div class="history-header">
+                        <span class="url">{{ item.url }}</span>
+                        <mat-chip 
+                          [color]="item.success ? 'accent' : 'warn'"
+                        >
+                          {{ item.success ? 'Success' : 'Failed' }}
+                        </mat-chip>
+                      </div>
+                      <div class="history-details">
+                        <span>{{ formatTimestamp(item.timestamp) }}</span>
+                        <span>{{ item.processingTime }}ms</span>
+                        @if (item.dataSize > 0) {
+                          <span>{{ item.dataSize }} fields</span>
+                        }
+                      </div>
+                    </mat-card-content>
+                  </mat-card>
+                }
+              </div>
+            } @else {
+              <div class="no-history">
+                <mat-icon>history</mat-icon>
+                <p>No scraping history yet.</p>
+              </div>
+            }
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div> 

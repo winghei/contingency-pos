@@ -1,0 +1,137 @@
+<div class="product-list-container">
+  <!-- Header -->
+  <div class="list-header">
+    <h2 class="list-title">
+      <mat-icon>inventory</mat-icon>
+      Products ({{ productService.productCount() }})
+    </h2>
+    
+    @if (productService.productCount() > 0) {
+      <div class="list-stats">
+        <span class="stat-item">
+          <mat-icon>check_circle</mat-icon>
+          {{ productService.inStockProducts().length }} in stock
+        </span>
+        <span class="stat-item">
+          <mat-icon>monetization_on</mat-icon>
+          Total: ${{ productService.totalValue().toFixed(2) }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Loading State -->
+  @if (productService.loading()) {
+    <div class="loading-spinner">
+      <mat-icon class="spinning">hourglass_empty</mat-icon>
+      <p>Loading products...</p>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (productService.productCount() === 0 && !productService.loading()) {
+    <div class="empty-state">
+      <mat-icon class="empty-state-icon">inventory_2</mat-icon>
+      <h3>No products yet</h3>
+      <p>Add your first product to get started with your POS system.</p>
+      <button mat-raised-button color="primary" (click)="openAddProductDialog()">
+        <mat-icon>add</mat-icon>
+        Add First Product
+      </button>
+    </div>
+  }
+
+  <!-- Product Grid -->
+  @if (productService.productCount() > 0 && !productService.loading()) {
+    <div class="product-grid">
+      @for (product of productService.products(); track product.id) {
+        <mat-card class="product-card" [class.out-of-stock]="!product.inStock">
+          <!-- Product Image -->
+          <div class="product-image-container">
+            @if (product.image) {
+              <img 
+                [src]="product.image" 
+                [alt]="product.name"
+                class="product-image"
+                (error)="onImageError($event)"
+              />
+            } @else {
+              <div class="product-image-placeholder">
+                <mat-icon>image</mat-icon>
+                <span>No Image</span>
+              </div>
+            }
+            
+            <!-- Stock Status -->
+            @if (!product.inStock) {
+              <div class="stock-status out-of-stock">
+                <mat-icon>inventory</mat-icon>
+                Out of Stock
+              </div>
+            } @else {
+              <div class="stock-status in-stock">
+                <mat-icon>check_circle</mat-icon>
+                In Stock
+              </div>
+            }
+          </div>
+
+          <!-- Product Info -->
+          <mat-card-content class="product-info">
+            <div class="product-header">
+              <h3 class="product-name">{{ product.name }}</h3>
+              <button 
+                mat-icon-button 
+                [matMenuTriggerFor]="productMenu"
+                class="product-menu-button"
+                [attr.aria-label]="'Options for ' + product.name">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </div>
+
+            <div class="product-price">${{ product.price.toFixed(2) }}</div>
+
+            @if (product.category) {
+              <mat-chip class="product-category">
+                {{ product.category }}
+              </mat-chip>
+            }
+
+            @if (product.description) {
+              <p class="product-description">{{ product.description }}</p>
+            }
+
+            <div class="product-meta">
+              @if (product.createdAt) {
+                <small class="created-date">
+                  Added: {{ formatDate(product.createdAt) }}
+                </small>
+              }
+            </div>
+          </mat-card-content>
+
+          <!-- Product Actions Menu -->
+          <mat-menu #productMenu="matMenu">
+            <button mat-menu-item (click)="editProduct(product)">
+              <mat-icon>edit</mat-icon>
+              Edit Product
+            </button>
+            <button mat-menu-item (click)="duplicateProduct(product)">
+              <mat-icon>content_copy</mat-icon>
+              Duplicate
+            </button>
+            <button mat-menu-item (click)="toggleStock(product)">
+              <mat-icon>{{ product.inStock ? 'inventory' : 'check_circle' }}</mat-icon>
+              {{ product.inStock ? 'Mark Out of Stock' : 'Mark In Stock' }}
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="deleteProduct(product)" class="delete-action">
+              <mat-icon>delete</mat-icon>
+              Delete Product
+            </button>
+          </mat-menu>
+        </mat-card>
+      }
+    </div>
+  }
+</div> 

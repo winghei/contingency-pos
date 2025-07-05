@@ -1,0 +1,191 @@
+<div class="quick-order-container">
+  <!-- Header -->
+  <mat-toolbar class="quick-order-toolbar">
+    <button mat-icon-button (click)="goToManagement()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="title">Quick Order</span>
+    <span class="spacer"></span>
+    
+    <!-- Cart Summary -->
+    <div class="cart-summary">
+      <button mat-button [matBadge]="cartItemCount()" 
+              [matBadgeHidden]="cartItemCount() === 0"
+              matBadgeColor="accent" 
+              class="cart-button">
+        <mat-icon>shopping_cart</mat-icon>
+        <span class="cart-total">${{ formatPrice(cartTotal()) }}</span>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <div class="content-container">
+    <!-- Category Filter -->
+    <div class="category-filter">
+      <mat-chip-set>
+        @for (category of categories(); track category) {
+          <mat-chip-option 
+            [selected]="selectedCategory() === category"
+            (click)="selectCategory(category)"
+            [class.selected]="selectedCategory() === category">
+            {{ category === 'all' ? 'All' : category }}
+          </mat-chip-option>
+        }
+      </mat-chip-set>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Products Grid -->
+      <div class="products-section">
+        <div class="products-grid">
+          @for (product of filteredProducts(); track product.id) {
+            <div class="product-card" 
+                 [class.in-cart]="getCartQuantity(product.id!) > 0"
+                 [class.top-product]="isTopProduct(product.id!)">
+              <div class="product-image">
+                @if (product.image) {
+                  <img [src]="product.image" [alt]="product.name" />
+                } @else {
+                  <div class="no-image">
+                    <mat-icon>image</mat-icon>
+                  </div>
+                }
+              </div>
+              
+              <div class="product-info">
+                <h3 class="product-name">{{ product.name }}</h3>
+                <p class="product-price">${{ formatPrice(product.price) }}</p>
+                @if (product.category) {
+                  <span class="product-category">{{ product.category }}</span>
+                }
+              </div>
+
+              <!-- Quantity Controls -->
+              @if (getCartQuantity(product.id!) > 0) {
+                <div class="quantity-controls">
+                  <button mat-mini-fab color="primary" 
+                          (click)="updateQuantity(product.id!, -1)"
+                          class="quantity-btn">
+                    <mat-icon>remove</mat-icon>
+                  </button>
+                  <span class="quantity">{{ getCartQuantity(product.id!) }}</span>
+                  <button mat-mini-fab color="primary" 
+                          (click)="updateQuantity(product.id!, 1)"
+                          class="quantity-btn">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+              } @else {
+                <button mat-fab color="primary" 
+                        (click)="addToCart(product)"
+                        class="add-btn">
+                  <mat-icon>add</mat-icon>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        @if (filteredProducts().length === 0) {
+          <div class="empty-state">
+            <mat-icon>inventory_2</mat-icon>
+            <h3>No products available</h3>
+            <p>No products found in the selected category.</p>
+          </div>
+        }
+      </div>
+
+      <!-- Cart Sidebar -->
+      <div class="cart-sidebar" [class.has-items]="cartItems().length > 0">
+        <div class="cart-header">
+          <h3>Current Order</h3>
+        </div>
+
+        <div class="cart-content">
+          @if (cartItems().length === 0) {
+            <div class="empty-cart">
+              <mat-icon>shopping_cart</mat-icon>
+              <p>Tap products to add them to your order</p>
+            </div>
+          } @else {
+            <div class="cart-items">
+              @for (item of cartItems(); track item.productId) {
+                <div class="cart-item">
+                  <div class="item-info">
+                    <h4>{{ item.product.name }}</h4>
+                    <p class="item-price">${{ formatPrice(item.product.price) }} each</p>
+                  </div>
+                  <div class="item-controls">
+                    <button mat-icon-button 
+                            (click)="updateQuantity(item.productId, -1)"
+                            class="control-btn">
+                      <mat-icon>remove</mat-icon>
+                    </button>
+                    <span class="quantity">{{ item.quantity }}</span>
+                    <button mat-icon-button 
+                            (click)="updateQuantity(item.productId, 1)"
+                            class="control-btn">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                  </div>
+                  <div class="item-total">
+                    ${{ formatPrice(item.product.price * item.quantity) }}
+                  </div>
+                </div>
+              }
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="cart-total">
+              <div class="total-row">
+                <span>Total ({{ cartItemCount() }} items)</span>
+                <span class="total-amount">${{ formatPrice(cartTotal()) }}</span>
+              </div>
+            </div>
+
+            <div class="cart-actions">
+              @if (cartItems().length > 0) {
+                <button mat-raised-button color="warn" 
+                        (click)="clearCart()"
+                        class="clear-order-btn">
+                  <mat-icon>clear</mat-icon>
+                 Cancel
+                </button>
+              }
+              <button mat-raised-button color="primary" 
+                      (click)="proceedToCheckout()"
+                      class="checkout-btn">
+                <mat-icon>payment</mat-icon>
+                Checkout
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Mobile Bottom Checkout Bar -->
+  <div class="mobile-checkout-bar" [class.visible]="cartItems().length > 0">
+    <div class="checkout-total">
+      <span class="total-label">Total:</span>
+      <span class="total-amount">${{ formatPrice(cartTotal()) }}</span>
+    </div>
+    <div class="mobile-actions">
+      <button mat-raised-button color="warn" 
+              (click)="clearCart()"
+              class="clear-order-btn">
+        <mat-icon>clear</mat-icon>
+        Clear
+      </button>
+      <button mat-raised-button color="primary" 
+              (click)="proceedToCheckout()"
+              class="checkout-btn">
+        <mat-icon>payment</mat-icon>
+        Checkout
+      </button>
+    </div>
+  </div>
+</div> 
