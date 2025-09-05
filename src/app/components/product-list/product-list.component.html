@@ -3,7 +3,7 @@
   <div class="list-header">
     <h2 class="list-title">
       <mat-icon>inventory</mat-icon>
-      Products ({{ productService.productCount() }})
+      Products ({{ filteredProducts().length }})
     </h2>
     
     @if (productService.productCount() > 0) {
@@ -14,11 +14,12 @@
         </span>
         <span class="stat-item">
           <mat-icon>monetization_on</mat-icon>
-          Total: ${{ productService.totalValue().toFixed(2) }}
+          Total: €{{ productService.totalValue().toFixed(2) }}
         </span>
       </div>
     }
   </div>
+
 
   <!-- Loading State -->
   @if (productService.loading()) {
@@ -44,7 +45,7 @@
   <!-- Product Grid -->
   @if (productService.productCount() > 0 && !productService.loading()) {
     <div class="product-grid">
-      @for (product of productService.products(); track product.id) {
+      @for (product of filteredProducts(); track product.id) {
         <mat-card class="product-card" [class.out-of-stock]="!product.inStock">
           <!-- Product Image -->
           <div class="product-image-container">
@@ -89,7 +90,7 @@
               </button>
             </div>
 
-            <div class="product-price">${{ product.price.toFixed(2) }}</div>
+            <div class="product-price">€{{ product.price.toFixed(2) }}</div>
 
             @if (product.category) {
               <mat-chip class="product-category">
@@ -132,6 +133,84 @@
           </mat-menu>
         </mat-card>
       }
+    </div>
+  }
+
+  <!-- Filter Toggle Button (Always Visible) -->
+  <button 
+    mat-fab 
+    class="filter-toggle-btn"
+    (click)="toggleFilter()"
+    [matTooltip]="isFilterExpanded() ? 'Close filters' : 'Open filters'"
+  >
+    <mat-icon>{{ isFilterExpanded() ? 'close' : 'filter_list' }}</mat-icon>
+  </button>
+
+  <!-- Floating Filter Panel -->
+  @if (productService.productCount() > 0) {
+    <div class="floating-filter-panel" [class.expanded]="isFilterExpanded()">
+
+      <!-- Filter Content -->
+      <div class="filter-content">
+        <div class="filter-header">
+          <h3>Filter Products</h3>
+          @if (searchTerm() || selectedCategory() || stockFilter() !== 'all') {
+            <button 
+              mat-icon-button 
+              (click)="clearFilters()" 
+              class="clear-filters-btn"
+              matTooltip="Clear all filters"
+            >
+              <mat-icon>clear</mat-icon>
+            </button>
+          }
+        </div>
+
+        <div class="filter-controls">
+          <!-- Search Input -->
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search products</mat-label>
+            <input 
+              matInput 
+              [value]="searchTerm()"
+              (input)="onSearchChange($event)"
+              placeholder="Search by name, description, or category"
+            >
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <!-- Category Filter -->
+          <mat-form-field appearance="outline" class="category-field">
+            <mat-label>Category</mat-label>
+            <mat-select [value]="selectedCategory()" (selectionChange)="onCategoryChange($event.value)">
+              <mat-option value="">All Categories</mat-option>
+              @for (category of availableCategories(); track category) {
+                <mat-option [value]="category">{{ category }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Stock Filter -->
+          <mat-button-toggle-group 
+            [value]="stockFilter()" 
+            (change)="onStockFilterChange($event.value)"
+            class="stock-filter"
+          >
+            <mat-button-toggle value="all">
+              <mat-icon>inventory</mat-icon>
+              All
+            </mat-button-toggle>
+            <mat-button-toggle value="in-stock">
+              <mat-icon>check_circle</mat-icon>
+              In Stock
+            </mat-button-toggle>
+            <mat-button-toggle value="out-of-stock">
+              <mat-icon>inventory_2</mat-icon>
+              Out of Stock
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+      </div>
     </div>
   }
 </div> 

@@ -92,7 +92,7 @@
                 min="0"
                 formControlName="receivedAmount"
                 placeholder="0.00">
-              <span matPrefix>$</span>
+              <span matPrefix>€</span>
               @if (hasFieldError('receivedAmount')) {
                 <mat-error>{{ getFieldError('receivedAmount') }}</mat-error>
               }
@@ -175,7 +175,7 @@
                   step="0.01" 
                   formControlName="receivedAmount"
                   [value]="cartTotal()">
-                <span matPrefix>$</span>
+                <span matPrefix>€</span>
                 @if (hasFieldError('receivedAmount')) {
                   <mat-error>{{ getFieldError('receivedAmount') }}</mat-error>
                 }
@@ -225,7 +225,7 @@
                   step="0.01" 
                   formControlName="receivedAmount"
                   [value]="cartTotal()">
-                <span matPrefix>$</span>
+                <span matPrefix>€</span>
                 @if (hasFieldError('receivedAmount')) {
                   <mat-error>{{ getFieldError('receivedAmount') }}</mat-error>
                 }
@@ -253,7 +253,7 @@
                   step="0.01" 
                   formControlName="receivedAmount"
                   [value]="cartTotal()">
-                <span matPrefix>$</span>
+                <span matPrefix>€</span>
                 @if (hasFieldError('receivedAmount')) {
                   <mat-error>{{ getFieldError('receivedAmount') }}</mat-error>
                 }

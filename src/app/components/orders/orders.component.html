@@ -7,15 +7,22 @@
         <h1>Orders</h1>
         <span class="order-count">({{ filteredOrders().length }} orders)</span>
       </div>
-      <div class="header-actions">
+      <div class="header-actions flex-wrap">
         <button mat-raised-button color="white" routerLink="/management">
           <mat-icon>arrow_back</mat-icon>
           Back
         </button>
         <button mat-raised-button color="accent" (click)="exportOrders()">
-
-          <mat-icon>download</mat-icon>
-          Export
+          <mat-icon>picture_as_pdf</mat-icon>
+          Export PDF
+        </button>
+        <button mat-raised-button color="accent" (click)="exportOrderSummary()">
+          <mat-icon>summarize</mat-icon>
+          Summary PDF
+        </button>
+        <button mat-raised-button color="accent" (click)="exportOrdersAsJson()">
+          <mat-icon>code</mat-icon>
+          Export JSON
         </button>
       </div>
     </div>
@@ -43,7 +50,7 @@
           </div>
           <div class="summary-content">
             <h3>Total Revenue</h3>
-            <p class="summary-value">${{ summaryStats().totalRevenue.toFixed(2) }}</p>
+            <p class="summary-value">€{{ summaryStats().totalRevenue.toFixed(2) }}</p>
           </div>
         </mat-card-content>
       </mat-card>
@@ -55,7 +62,7 @@
           </div>
           <div class="summary-content">
             <h3>Average Order</h3>
-            <p class="summary-value">${{ summaryStats().averageOrderValue.toFixed(2) }}</p>
+            <p class="summary-value">€{{ summaryStats().averageOrderValue.toFixed(2) }}</p>
           </div>
         </mat-card-content>
       </mat-card>
@@ -105,6 +112,7 @@
               <mat-option value="completed">Completed</mat-option>
               <mat-option value="cancelled">Cancelled</mat-option>
               <mat-option value="refunded">Refunded</mat-option>
+              <mat-option value="void">Void</mat-option>
             </mat-select>
           </mat-form-field>
 
@@ -139,7 +147,7 @@
               <div class="product-name">{{ product.name }}</div>
               <div class="product-stats">
                 <span class="quantity">{{ product.quantity }} sold</span>
-                <span class="revenue">${{ product.revenue.toFixed(2) }}</span>
+                <span class="revenue">€{{ product.revenue.toFixed(2) }}</span>
               </div>
             </div>
           }
@@ -200,15 +208,15 @@
             <ng-container matColumnDef="total">
               <th mat-header-cell *matHeaderCellDef>Total</th>
               <td mat-cell *matCellDef="let order">
-                <div class="order-total">${{ order.total.toFixed(2) }}</div>
+                <div class="order-total">€{{ order.total.toFixed(2) }}</div>
                 @if (order.tax > 0) {
-                  <div class="tax-info">+${{ order.tax.toFixed(2) }} tax</div>
+                  <div class="tax-info">+€{{ order.tax.toFixed(2) }} tax</div>
                 }
                 @if (order.amountReceived && order.amountReceived > 0) {
                   <div class="payment-info">
-                    <div class="received">Received: ${{ order.amountReceived.toFixed(2) }}</div>
+                    <div class="received">Received: €{{ order.amountReceived.toFixed(2) }}</div>
                     @if (order.changeAmount && order.changeAmount > 0) {
-                      <div class="change">Change: ${{ order.changeAmount.toFixed(2) }}</div>
+                      <div class="change">Change: €{{ order.changeAmount.toFixed(2) }}</div>
                     }
                   </div>
                 }
@@ -256,6 +264,11 @@
                 <button mat-icon-button (click)="viewOrderDetails(order)" matTooltip="View Details">
                   <mat-icon>visibility</mat-icon>
                 </button>
+                @if (order.status !== 'void') {
+                  <button mat-icon-button (click)="voidOrder(order.id || '')" matTooltip="Void Order" color="warn">
+                    <mat-icon>block</mat-icon>
+                  </button>
+                }
               </td>
             </ng-container>
 
@@ -274,7 +287,14 @@
                     <div class="order-number">{{ order.orderNumber }}</div>
                     <div class="order-date">{{ formatDate(order.createdAt) }}</div>
                   </div>
-                  <div class="order-total-mobile">${{ order.total.toFixed(2) }}</div>
+                  <div class="order-header-actions">
+                    <div class="order-total-mobile">€{{ order.total.toFixed(2) }}</div>
+                    @if (order.status !== 'void') {
+                      <button mat-mini-fab (click)="voidOrder(order.id || '')" matTooltip="Void Order" color="warn" class="void-button-mobile">
+                        <mat-icon>block</mat-icon>
+                      </button>
+                    }
+                  </div>
                 </div>
                 
                 <div class="order-card-details" [class.expanded]="expandedOrders()[order.id || '']">
@@ -302,7 +322,7 @@
                         <div class="item-row">
                           <span class="item-name">{{ item.product.name }}</span>
                           <span class="item-quantity">×{{ item.quantity }}</span>
-                          <span class="item-price">${{ item.totalPrice.toFixed(2) }}</span>
+                          <span class="item-price">€{{ item.totalPrice.toFixed(2) }}</span>
                         </div>
                       }
                     </div>
@@ -333,7 +353,7 @@
                   
                   @if (order.tax > 0) {
                     <div class="tax-section">
-                      <span>Tax: ${{ order.tax.toFixed(2) }}</span>
+                      <span>Tax: €{{ order.tax.toFixed(2) }}</span>
                     </div>
                   }
                   
@@ -346,16 +366,16 @@
                       <div class="payment-calculation-details">
                         <div class="payment-row">
                           <span class="label">Total Due:</span>
-                          <span class="amount">${{ order.total.toFixed(2) }}</span>
+                          <span class="amount">€{{ order.total.toFixed(2) }}</span>
                         </div>
                         <div class="payment-row">
                           <span class="label">Amount Received:</span>
-                          <span class="amount received">${{ order.amountReceived.toFixed(2) }}</span>
+                          <span class="amount received">€{{ order.amountReceived.toFixed(2) }}</span>
                         </div>
                         @if (order.changeAmount && order.changeAmount > 0) {
                           <div class="payment-row change">
                             <span class="label">Change Given:</span>
-                            <span class="amount change">${{ order.changeAmount.toFixed(2) }}</span>
+                            <span class="amount change">€{{ order.changeAmount.toFixed(2) }}</span>
                           </div>
                         }
                         @if (order.amountReceived === order.total) {
@@ -373,6 +393,12 @@
                       <mat-icon>visibility</mat-icon>
                       View Details
                     </button>
+                    @if (order.status !== 'void') {
+                      <button mat-stroked-button (click)="voidOrder(order.id || '')" color="warn">
+                        <mat-icon>block</mat-icon>
+                        Void Order
+                      </button>
+                    }
                   </div>
                 </div>
                 

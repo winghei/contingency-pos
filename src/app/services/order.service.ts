@@ -494,4 +494,15 @@ export class OrderService {
     );
     this.saveOrdersToStorage();
   }
+
+  updateOrderStatus(orderId: string, status: string): void {
+    this._orders.update(orders => 
+      orders.map(order => 
+        order.id === orderId 
+          ? { ...order, status: status as any, updatedAt: new Date() }
+          : order
+      )
+    );
+    this.saveOrdersToStorage();
+  }
 }

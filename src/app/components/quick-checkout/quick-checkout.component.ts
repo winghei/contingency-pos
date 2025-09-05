@@ -108,7 +108,7 @@ export class QuickCheckoutComponent {
         const change = this.changeAmount();
         let message = 'Payment successful!';
         if (change > 0) {
-          message += ` Change: $${change.toFixed(2)}`;
+          message += ` Change: €${change.toFixed(2)}`;
         }
         
         this.snackBar.open(message, 'Close', { 

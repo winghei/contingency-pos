@@ -44,6 +44,7 @@ export class QuickOrderComponent {
   cartItemCount = this.orderService.cartItemCount;
   
   selectedCategory = signal<string>('all');
+  showMobileCart = signal<boolean>(false);
   
   // Get unique categories from products
   categories = computed(() => {
@@ -130,5 +131,13 @@ export class QuickOrderComponent {
 
   formatPrice(price: number): string {
     return price.toFixed(2);
+  }
+
+  toggleMobileCart() {
+    this.showMobileCart.update(show => !show);
+  }
+
+  closeMobileCart() {
+    this.showMobileCart.set(false);
   }
 } 

@@ -8,6 +8,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { FormsModule } from '@angular/forms';
 
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../types/product.types';
@@ -20,18 +26,94 @@ import { ProductFormComponent, ProductFormDialogData } from '../product-form/pro
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
+    FormsModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
     MatMenuModule,
-    MatDividerModule
+    MatDividerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonToggleModule,
+    MatTooltipModule
   ]
 })
 export class ProductListComponent {
   protected productService = inject(ProductService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
+
+  // Filter signals
+  searchTerm = signal('');
+  selectedCategory = signal<string>('');
+  stockFilter = signal<'all' | 'in-stock' | 'out-of-stock'>('all');
+  isFilterExpanded = signal(false);
+
+  // Computed filtered products
+  filteredProducts = computed(() => {
+    let products = this.productService.products();
+    
+    // Filter by search term
+    const search = this.searchTerm().toLowerCase();
+    if (search) {
+      products = products.filter(product => 
+        product.name.toLowerCase().includes(search) ||
+        product.description?.toLowerCase().includes(search) ||
+        product.category?.toLowerCase().includes(search)
+      );
+    }
+    
+    // Filter by category
+    const category = this.selectedCategory();
+    if (category) {
+      products = products.filter(product => product.category === category);
+    }
+    
+    // Filter by stock status
+    const stock = this.stockFilter();
+    if (stock === 'in-stock') {
+      products = products.filter(product => product.inStock);
+    } else if (stock === 'out-of-stock') {
+      products = products.filter(product => !product.inStock);
+    }
+    
+    return products;
+  });
+
+  // Available categories
+  availableCategories = computed(() => {
+    const categories = this.productService.products()
+      .map(p => p.category)
+      .filter((category, index, arr) => category && arr.indexOf(category) === index)
+      .sort();
+    return categories;
+  });
+
+  // Filter methods
+  onSearchChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.searchTerm.set(target.value);
+  }
+
+  onCategoryChange(category: string): void {
+    this.selectedCategory.set(category);
+  }
+
+  onStockFilterChange(filter: 'all' | 'in-stock' | 'out-of-stock'): void {
+    this.stockFilter.set(filter);
+  }
+
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.selectedCategory.set('');
+    this.stockFilter.set('all');
+  }
+
+  toggleFilter(): void {
+    this.isFilterExpanded.update(expanded => !expanded);
+  }
 
   openAddProductDialog(): void {
     const dialogRef = this.dialog.open(ProductFormComponent, {

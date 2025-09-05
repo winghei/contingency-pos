@@ -43,14 +43,14 @@
           min="0.01"
           required
         />
-        <span matTextPrefix>$</span>
+        <span matTextPrefix>€</span>
         <mat-icon matSuffix>attach_money</mat-icon>
         @if (productForm.get('price')?.invalid &&
         productForm.get('price')?.touched) {
         <mat-error>
           @if (productForm.get('price')?.errors?.['required']) { Price is
           required } @if (productForm.get('price')?.errors?.['min']) { Price
-          must be at least $0.01 }
+          must be at least €0.01 }
         </mat-error>
         }
       </mat-form-field>

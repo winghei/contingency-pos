@@ -344,9 +344,10 @@
     .order-card-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       padding-bottom: 0.75rem;
       border-bottom: 1px solid #f0f0f0;
+      min-height: 60px;
       
       .order-main-info {
         .order-number {
@@ -362,10 +363,33 @@
         }
       }
       
-      .order-total-mobile {
-        font-weight: 600;
-        color: #333;
-        font-size: 1.1rem;
+      .order-header-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        flex-shrink: 0;
+        
+        .order-total-mobile {
+          font-weight: 600;
+          color: #333;
+          font-size: 1.1rem;
+          white-space: nowrap;
+        }
+        
+        .void-button-mobile {
+          width: 32px;
+          height: 32px;
+          flex-shrink: 0;
+          position: relative;
+          z-index: 10;
+          
+          mat-icon {
+            font-size: 1rem;
+            width: 1rem;
+            height: 1rem;
+          }
+        }
       }
     }
     
@@ -569,8 +593,11 @@
       }
       
       .order-actions {
+        display: flex;
+        gap: 0.5rem;
+        
         button {
-          width: 100%;
+          flex: 1;
           height: 40px;
         }
       }
@@ -767,6 +794,36 @@
     }
   }
   
+  .mobile-orders {
+    .order-card {
+      .order-card-header {
+        .order-header-actions {
+          .void-button-mobile {
+            width: 36px;
+            height: 36px;
+            
+            mat-icon {
+              font-size: 1.1rem;
+              width: 1.1rem;
+              height: 1.1rem;
+            }
+          }
+        }
+      }
+      
+      .order-card-details {
+        .order-actions {
+          flex-direction: column;
+          gap: 0.5rem;
+          
+          button {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+  
   .orders-table-card {
     .table-container {
       .orders-table {
@@ -931,6 +988,34 @@
         
         .product-stats {
           font-size: 0.75rem;
+        }
+      }
+    }
+  }
+  
+  .mobile-orders {
+    .order-card {
+      .order-card-header {
+        .order-header-actions {
+          .void-button-mobile {
+            width: 32px;
+            height: 32px;
+            
+            mat-icon {
+              font-size: 1rem;
+              width: 1rem;
+              height: 1rem;
+            }
+          }
+        }
+      }
+      
+      .order-card-details {
+        .order-actions {
+          button {
+            height: 36px;
+            font-size: 0.8rem;
+          }
         }
       }
     }

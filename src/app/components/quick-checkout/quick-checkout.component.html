@@ -33,13 +33,13 @@
               <div class="item-info">
                 <span class="item-name">{{ item.product.name }}</span>
                 <span class="item-details"
-                  >{{ item.quantity }} × ${{
+                  >{{ item.quantity }} × €{{
                     formatPrice(item.product.price)
                   }}</span
                 >
               </div>
               <div class="item-total">
-                ${{ formatPrice(item.product.price * item.quantity) }}
+                €{{ formatPrice(item.product.price * item.quantity) }}
               </div>
             </div>
             }
@@ -50,7 +50,7 @@
           <div class="total-section">
             <div class="total-row">
               <span class="total-label">Total</span>
-              <span class="total-amount">${{ formatPrice(cartTotal()) }}</span>
+              <span class="total-amount">€{{ formatPrice(cartTotal()) }}</span>
             </div>
           </div>
         </mat-card-content>
@@ -80,7 +80,7 @@
                 (input)="onAmountChange($any($event.target).value)"
                 placeholder="0.00"
               />
-              <span matTextPrefix>$</span>
+              <span matTextPrefix>€</span>
             </mat-form-field>
 
             <button
@@ -112,7 +112,7 @@
                 class="amount-btn"
                 [class.selected]="receivedAmount() === amount"
               >
-                ${{ amount }}
+                €{{ amount }}
               </button>
               }
             </div>
@@ -120,13 +120,13 @@
             <div class="add-amounts">
               <span class="add-label">Add:</span>
               <button mat-button (click)="addAmount(1)" class="add-btn">
-                +$1
+                +€1
               </button>
               <button mat-button (click)="addAmount(5)" class="add-btn">
-                +$5
+                +€5
               </button>
               <button mat-button (click)="addAmount(10)" class="add-btn">
-                +$10
+                +€10
               </button>
             </div>
           </div>
@@ -135,11 +135,11 @@
           <div class="payment-summary">
             <div class="summary-row">
               <span>Total Due:</span>
-              <span class="amount">${{ formatPrice(cartTotal()) }}</span>
+              <span class="amount">€{{ formatPrice(cartTotal()) }}</span>
             </div>
             <div class="summary-row">
               <span>Amount Received:</span>
-              <span class="amount">${{ formatPrice(receivedAmount()) }}</span>
+              <span class="amount">€{{ formatPrice(receivedAmount()) }}</span>
             </div>
             <mat-divider></mat-divider>
             <div
@@ -148,7 +148,7 @@
             >
               <span>Change:</span>
               <span class="change-amount"
-                >${{ formatPrice(changeAmount()) }}</span
+                >€{{ formatPrice(changeAmount()) }}</span
               >
             </div>
           </div>
@@ -158,7 +158,7 @@
           <div class="payment-status insufficient">
             <mat-icon>warning</mat-icon>
             <span
-              >Insufficient payment. Need ${{
+              >Insufficient payment. Need €{{
                 formatPrice(cartTotal() - receivedAmount())
               }}
               more.</span
@@ -168,7 +168,7 @@
           <div class="payment-status sufficient">
             <mat-icon>check_circle</mat-icon>
             <span
-              >Payment sufficient. Change: ${{
+              >Payment sufficient. Change: €{{
                 formatPrice(changeAmount())
               }}</span
             >

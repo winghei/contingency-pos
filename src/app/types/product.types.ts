@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const ProductSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1, 'Product name is required').max(100, 'Product name must be less than 100 characters'),
-  price: z.number().positive('Price must be positive').min(0.01, 'Price must be at least $0.01'),
+  price: z.number().positive('Price must be positive').min(0.01, 'Price must be at least €0.01'),
   image: z.string().optional().refine((val) => !val || val === '' || /^https?:\/\/.+/.test(val), {
     message: 'Image must be a valid URL or empty'
   }),

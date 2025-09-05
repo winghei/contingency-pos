@@ -17,6 +17,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { OrderService } from '../../services/order.service';
+import { PdfExportService } from '../../services/pdf-export.service';
 import { Order, OrderStatus } from '../../types/order.types';
 
 @Component({
@@ -46,6 +47,7 @@ import { Order, OrderStatus } from '../../types/order.types';
 })
 export class OrdersComponent {
   private orderService = inject(OrderService);
+  private pdfExportService = inject(PdfExportService);
   private fb = inject(FormBuilder);
 
   // Filter form
@@ -63,6 +65,11 @@ export class OrdersComponent {
   // Computed filtered orders
   filteredOrders = computed(() => {
     let orders = this.orderService.orders();
+    
+    // Hide void orders by default unless specifically filtering for them
+    if (this._statusFilter() !== 'void') {
+      orders = orders.filter(order => order.status !== 'void');
+    }
     
     // Filter by date range
     if (this._startDate() || this._endDate()) {
@@ -187,6 +194,7 @@ export class OrdersComponent {
       completed: 'green',
       cancelled: 'red',
       refunded: 'red',
+      void: 'grey',
     };
     return colors[status] || 'grey';
   }
@@ -201,6 +209,7 @@ export class OrdersComponent {
       completed: 'done_all',
       cancelled: 'cancel',
       refunded: 'money_off',
+      void: 'block',
     };
     return icons[status] || 'help';
   }
@@ -237,13 +246,73 @@ export class OrdersComponent {
 
   exportOrders(): void {
     const orders = this.filteredOrders();
-    const dataStr = JSON.stringify(orders, null, 2);
+    if (orders.length === 0) {
+      console.warn('No orders to export');
+      return;
+    }
+    
+    // Generate filename with current date
+    const dateStr = new Date().toISOString().split('T')[0];
+    const filename = `orders-report-${dateStr}.pdf`;
+    
+    this.pdfExportService.exportOrdersToPdf(orders, filename);
+  }
+
+  exportOrderSummary(): void {
+    const orders = this.filteredOrders();
+    if (orders.length === 0) {
+      console.warn('No orders to export');
+      return;
+    }
+    
+    // Generate filename with current date
+    const dateStr = new Date().toISOString().split('T')[0];
+    const filename = `orders-summary-${dateStr}.pdf`;
+    
+    this.pdfExportService.exportOrderSummaryToPdf(orders, filename);
+  }
+
+  exportOrdersAsJson(): void {
+    const orders = this.filteredOrders();
+    if (orders.length === 0) {
+      console.warn('No orders to export');
+      return;
+    }
+    
+    // Create export data with metadata
+    const exportData = {
+      metadata: {
+        exportedAt: new Date().toISOString(),
+        totalOrders: orders.length,
+        totalRevenue: orders.reduce((sum, order) => sum + order.total, 0),
+        averageOrderValue: orders.length > 0 ? orders.reduce((sum, order) => sum + order.total, 0) / orders.length : 0,
+        filters: {
+          startDate: this._startDate(),
+          endDate: this._endDate(),
+          status: this._statusFilter(),
+          searchTerm: this._searchTerm()
+        }
+      },
+      orders: orders
+    };
+    
+    // Convert to JSON string with proper formatting
+    const dataStr = JSON.stringify(exportData, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     
+    // Create download link
     const link = document.createElement('a');
     link.href = URL.createObjectURL(dataBlob);
-    link.download = `orders-${new Date().toISOString().split('T')[0]}.json`;
+    
+    // Generate filename with current date
+    const dateStr = new Date().toISOString().split('T')[0];
+    link.download = `orders-export-${dateStr}.json`;
+    
+    // Trigger download
     link.click();
+    
+    // Clean up
+    URL.revokeObjectURL(link.href);
   }
 
   toggleOrderExpansion(orderId: string): void {
@@ -255,5 +324,11 @@ export class OrdersComponent {
 
   toggleCheckIn(orderId: string, currentCheckIn: boolean): void {
     this.orderService.updateOrderCheckIn(orderId, !currentCheckIn);
+  }
+
+  voidOrder(orderId: string): void {
+    if (confirm('Are you sure you want to void this order? This action cannot be undone.')) {
+      this.orderService.updateOrderStatus(orderId, 'void');
+    }
   }
 } 

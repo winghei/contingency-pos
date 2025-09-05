@@ -12,9 +12,10 @@
       <button mat-button [matBadge]="cartItemCount()" 
               [matBadgeHidden]="cartItemCount() === 0"
               matBadgeColor="accent" 
-              class="cart-button">
+              class="cart-button"
+              (click)="toggleMobileCart()">
         <mat-icon>shopping_cart</mat-icon>
-        <span class="cart-total">${{ formatPrice(cartTotal()) }}</span>
+        <span class="cart-total">€{{ formatPrice(cartTotal()) }}</span>
       </button>
     </div>
   </mat-toolbar>
@@ -55,7 +56,7 @@
               
               <div class="product-info">
                 <h3 class="product-name">{{ product.name }}</h3>
-                <p class="product-price">${{ formatPrice(product.price) }}</p>
+                <p class="product-price">€{{ formatPrice(product.price) }}</p>
                 @if (product.category) {
                   <span class="product-category">{{ product.category }}</span>
                 }
@@ -97,9 +98,14 @@
       </div>
 
       <!-- Cart Sidebar -->
-      <div class="cart-sidebar" [class.has-items]="cartItems().length > 0">
+      <div class="cart-sidebar" 
+           [class.has-items]="cartItems().length > 0"
+           [class.mobile-visible]="showMobileCart()">
         <div class="cart-header">
           <h3>Current Order</h3>
+          <button mat-icon-button (click)="closeMobileCart()" class="close-mobile-cart">
+            <mat-icon>close</mat-icon>
+          </button>
         </div>
 
         <div class="cart-content">
@@ -114,7 +120,7 @@
                 <div class="cart-item">
                   <div class="item-info">
                     <h4>{{ item.product.name }}</h4>
-                    <p class="item-price">${{ formatPrice(item.product.price) }} each</p>
+                    <p class="item-price">€{{ formatPrice(item.product.price) }} each</p>
                   </div>
                   <div class="item-controls">
                     <button mat-icon-button 
@@ -130,7 +136,7 @@
                     </button>
                   </div>
                   <div class="item-total">
-                    ${{ formatPrice(item.product.price * item.quantity) }}
+                    €{{ formatPrice(item.product.price * item.quantity) }}
                   </div>
                 </div>
               }
@@ -141,7 +147,7 @@
             <div class="cart-total">
               <div class="total-row">
                 <span>Total ({{ cartItemCount() }} items)</span>
-                <span class="total-amount">${{ formatPrice(cartTotal()) }}</span>
+                <span class="total-amount">€{{ formatPrice(cartTotal()) }}</span>
               </div>
             </div>
 
@@ -167,11 +173,16 @@
     </div>
   </div>
   
+  <!-- Mobile Cart Backdrop -->
+  <div class="mobile-cart-backdrop" 
+       [class.visible]="showMobileCart()"
+       (click)="closeMobileCart()"></div>
+  
   <!-- Mobile Bottom Checkout Bar -->
   <div class="mobile-checkout-bar" [class.visible]="cartItems().length > 0">
     <div class="checkout-total">
       <span class="total-label">Total:</span>
-      <span class="total-amount">${{ formatPrice(cartTotal()) }}</span>
+      <span class="total-amount">€{{ formatPrice(cartTotal()) }}</span>
     </div>
     <div class="mobile-actions">
       <button mat-raised-button color="warn" 

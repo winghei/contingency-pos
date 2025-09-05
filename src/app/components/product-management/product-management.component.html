@@ -21,7 +21,7 @@
 
   <!-- Main Content -->
   <div class="main-content">
-    <div class="d-flex p-2 justify-content-center gap-2">
+    <div class="sticky-button-section d-flex p-2 justify-content-center gap-2 ">
       <button
         mat-raised-button
         color="accent"
@@ -69,10 +69,10 @@
 
   <!-- App Menu -->
   <mat-menu #appMenu="matMenu">
-    <button mat-menu-item (click)="loadDemoData()">
+    <!-- <button mat-menu-item (click)="loadDemoData()">
       <mat-icon>download</mat-icon>
       Load Demo Data
-    </button>
+    </button> -->
     <button mat-menu-item (click)="loadDitschProducts()">
       <mat-icon>language</mat-icon>
       Load Ditsch Products
@@ -91,17 +91,17 @@
       Import Data
     </button>
     <mat-divider></mat-divider>
-    <button mat-menu-item routerLink="/scraper">
+    <!-- <button mat-menu-item routerLink="/scraper">
       <mat-icon>web</mat-icon>
       Web Scraper
-    </button>
-    <button mat-menu-item>
+    </button> -->
+    <!-- <button mat-menu-item>
       <mat-icon>settings</mat-icon>
       Settings
     </button>
     <button mat-menu-item>
       <mat-icon>help</mat-icon>
       Help
-    </button>
+    </button> -->
   </mat-menu>
 </div>

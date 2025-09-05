@@ -67,7 +67,8 @@ export const OrderStatusSchema = z.enum([
   'ready',
   'completed',
   'cancelled',
-  'refunded'
+  'refunded',
+  'void'
 ]);
 
 export type OrderStatus = z.infer<typeof OrderStatusSchema>;
