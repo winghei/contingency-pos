@@ -1,0 +1,1 @@
+import{Ha as a,Nc as o,T as e,kd as r,yc as i}from"./chunk-LK5HTDF3.js";var m=(()=>{class t{static \u0275fac=function(s){return new(s||t)};static \u0275mod=a({type:t});static \u0275inj=e({imports:[o,i,r,o]})}return t})();export{m as a};
