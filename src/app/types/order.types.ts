@@ -178,7 +178,7 @@ export const defaultPaymentState: PaymentState = {
 export const defaultTaxConfig: TaxConfig = {
   rate: 0.08, // 8% sales tax
   name: 'Sales Tax',
-  included: false,
+  included: true, // Tax is included in product prices
 };
 
 // Utility functions for calculations
@@ -190,8 +190,15 @@ export const calculateSubtotal = (items: CartItem[]): number => {
   return items.reduce((total, item) => total + calculateItemTotal(item), 0);
 };
 
-export const calculateTax = (subtotal: number, taxRate: number): number => {
-  return subtotal * taxRate;
+export const calculateTax = (subtotal: number, taxRate: number, included: boolean = false): number => {
+  if (included) {
+    // When tax is included, calculate the tax portion from the total
+    // Formula: tax = total - (total / (1 + taxRate))
+    return subtotal - (subtotal / (1 + taxRate));
+  } else {
+    // When tax is not included, add tax to the subtotal
+    return subtotal * taxRate;
+  }
 };
 
 export const calculateTotal = (subtotal: number, tax: number, discount: number): number => {

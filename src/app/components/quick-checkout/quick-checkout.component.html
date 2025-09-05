@@ -180,14 +180,14 @@
           </div>
           }
         </mat-card-content>
-        
+
         <!-- Desktop Payment Actions -->
         <mat-card-actions class="desktop-payment-actions">
           <button mat-button (click)="goBack()" class="cancel-btn">
             <mat-icon>arrow_back</mat-icon>
             Back to Order
           </button>
-          
+
           <button
             mat-raised-button
             color="primary"
@@ -196,15 +196,18 @@
             class="process-btn"
           >
             @if (isProcessing()) {
+
             <ng-container>
               <mat-icon>hourglass_empty</mat-icon>
               Processing...
             </ng-container>
             } @else {
-            <ng-container>
-              <mat-icon>check</mat-icon>
-              Complete Sale
-            </ng-container>
+            <div class="d-flex align-items-center gap-2">
+              <ng-container>
+                <mat-icon>check</mat-icon>
+                Complete Sale
+              </ng-container>
+            </div>
             }
           </button>
         </mat-card-actions>

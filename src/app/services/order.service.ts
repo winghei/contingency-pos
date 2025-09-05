@@ -164,8 +164,21 @@ export class OrderService {
 
   private updateCartTotals(items: CartItem[]): void {
     const subtotal = calculateSubtotal(items);
-    const tax = calculateTax(subtotal, this._taxConfig().rate);
-    const total = calculateTotal(subtotal, tax, 0); // No discount for now
+    const taxConfig = this._taxConfig();
+    
+    let tax = 0;
+    let total = subtotal;
+    
+    if (!taxConfig.included) {
+      // Tax is not included in prices, so add it
+      tax = calculateTax(subtotal, taxConfig.rate, false);
+      total = calculateTotal(subtotal, tax, 0); // No discount for now
+    } else {
+      // Tax is included in prices, so calculate the tax portion for display
+      // but don't add it to the total
+      tax = calculateTax(subtotal, taxConfig.rate, true);
+      total = subtotal; // Total is the same as subtotal when tax is included
+    }
 
     this._cartState.update((state) => ({
       ...state,
