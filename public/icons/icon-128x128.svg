@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#66bb6a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#388e3c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="62" fill="url(#bg)" stroke="#2e7d32" stroke-width="2"/>
+  
+  <!-- Cash register icon -->
+  <g transform="translate(44.8, 51.2)">
+    <!-- Register body -->
+    <rect x="0" y="6.4" width="38.4" height="19.2" fill="#ffffff" rx="2"/>
+    <!-- Display screen -->
+    <rect x="2.56" y="8.96" width="33.28" height="10.24" fill="#4caf50" rx="1"/>
+    <!-- Buttons -->
+    <circle cx="10.24" cy="23.04" r="1.92" fill="#666"/>
+    <circle cx="19.2" cy="23.04" r="1.92" fill="#666"/>
+    <circle cx="28.16" cy="23.04" r="1.92" fill="#666"/>
+    <!-- Drawer -->
+    <rect x="6.4" y="25.6" width="25.6" height="3.84" fill="#8d6e63" rx="1"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="64" y="81" font-family="Arial, sans-serif" font-size="51" font-weight="bold" text-anchor="middle" fill="#ffffff">POS</text>
+</svg>

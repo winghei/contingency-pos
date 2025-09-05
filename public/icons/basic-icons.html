@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic PWA Icons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .icon-item {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .icon-item canvas {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .icon-item label {
+            display: block;
+            margin-top: 5px;
+            font-weight: bold;
+            color: #333;
+            font-size: 10px;
+        }
+        .download-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 2px;
+            font-size: 10px;
+        }
+        .download-btn:hover {
+            background: #45a049;
+        }
+        .controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .controls button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 0 5px;
+        }
+        .controls button:hover {
+            background: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Basic PWA Icons</h1>
+        <p>Simple colored square icons for PWA manifest.</p>
+        
+        <div class="controls">
+            <button onclick="createIcons()">Create Icons</button>
+            <button onclick="downloadAll()">Download All</button>
+        </div>
+        
+        <div class="icon-grid" id="iconGrid">
+            <!-- Icons will appear here -->
+        </div>
+    </div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        const shortcuts = [
+            { name: 'shortcut-order', text: 'ORD' },
+            { name: 'shortcut-orders', text: 'LST' },
+            { name: 'shortcut-products', text: 'PRD' }
+        ];
+        
+        let allIcons = [];
+        
+        function createIcons() {
+            const grid = document.getElementById('iconGrid');
+            grid.innerHTML = '';
+            allIcons = [];
+            
+            // Create main icons
+            sizes.forEach(size => {
+                const canvas = createBasicIcon(size, 'POS');
+                const filename = `icon-${size}x${size}.png`;
+                allIcons.push({ canvas, filename });
+                addIconToGrid(canvas, filename);
+            });
+            
+            // Create shortcut icons
+            shortcuts.forEach(shortcut => {
+                const canvas = createBasicIcon(96, shortcut.text);
+                const filename = `${shortcut.name}.png`;
+                allIcons.push({ canvas, filename });
+                addIconToGrid(canvas, filename);
+            });
+        }
+        
+        function createBasicIcon(size, text) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Fill with green background
+            ctx.fillStyle = '#4caf50';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Add white text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${size * 0.3}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, size/2, size/2);
+            
+            return canvas;
+        }
+        
+        function addIconToGrid(canvas, filename) {
+            const grid = document.getElementById('iconGrid');
+            const item = document.createElement('div');
+            item.className = 'icon-item';
+            
+            const canvasClone = canvas.cloneNode();
+            item.appendChild(canvasClone);
+            
+            const label = document.createElement('label');
+            label.textContent = filename;
+            item.appendChild(label);
+            
+            const btn = document.createElement('button');
+            btn.className = 'download-btn';
+            btn.textContent = 'Save';
+            btn.onclick = () => downloadIcon(filename, canvas);
+            item.appendChild(btn);
+            
+            grid.appendChild(item);
+        }
+        
+        function downloadIcon(filename, canvas) {
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 'image/png');
+        }
+        
+        function downloadAll() {
+            allIcons.forEach((icon, index) => {
+                setTimeout(() => {
+                    downloadIcon(icon.filename, icon.canvas);
+                }, index * 100);
+            });
+        }
+        
+        // Auto-create icons on page load
+        window.onload = createIcons;
+    </script>
+</body>
+</html>

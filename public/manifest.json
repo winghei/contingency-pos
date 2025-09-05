@@ -1,0 +1,130 @@
+{
+  "name": "Contingency POS",
+  "short_name": "POS",
+  "description": "Point of Sale system for contingency management",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#4caf50",
+  "theme_color": "#4caf50",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/desktop-screenshot.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop view of the POS system"
+    },
+    {
+      "src": "screenshots/mobile-screenshot.png",
+      "sizes": "375x667",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile view of the POS system"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quick Order",
+      "short_name": "Order",
+      "description": "Create a new order quickly",
+      "url": "/quick-order",
+      "icons": [
+        {
+          "src": "icons/shortcut-order.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "View Orders",
+      "short_name": "Orders",
+      "description": "View and manage orders",
+      "url": "/orders",
+      "icons": [
+        {
+          "src": "icons/shortcut-orders.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Product Management",
+      "short_name": "Products",
+      "description": "Manage products and inventory",
+      "url": "/management",
+      "icons": [
+        {
+          "src": "icons/shortcut-products.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}
