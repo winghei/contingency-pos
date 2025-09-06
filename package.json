@@ -25,8 +25,16 @@
     "github-deploy": "npx angular-cli-ghpages --dir=dist/contingency-pos/browser --no-silent",
     "server": "node server.js",
     "server:dev": "nodemon server.js",
+    "server:pm2": "pm2 start ecosystem.config.js",
+    "server:pm2:dev": "pm2 start ecosystem.config.js --env development",
+    "server:pm2:stop": "pm2 stop contingency-pos-server",
+    "server:pm2:restart": "pm2 restart contingency-pos-server",
+    "server:pm2:delete": "pm2 delete contingency-pos-server",
+    "server:pm2:status": "pm2 status",
+    "server:pm2:logs": "pm2 logs contingency-pos-server",
     "dev": "concurrently \"npm run start\" \"npm run server:dev\"",
-    "build:all": "npm run build && npm run server"
+    "build:all": "npm run build && npm run server",
+    "build:pm2": "npm run build && npm run server:pm2"
   },
   "prettier": {
     "overrides": [
@@ -70,6 +78,7 @@
     "@angular/pwa": "^20.2.2",
     "concurrently": "^8.2.2",
     "nodemon": "^3.1.10",
+    "pm2": "^6.0.10",
     "typescript": "~5.8.2"
   },
   "backendDependencies": {
