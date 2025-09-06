@@ -44,7 +44,6 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            
             "assets": [
               {
                 "glob": "**/*",
@@ -81,6 +80,11 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json",
+            "host": "0.0.0.0",
+            "port": 4200
+          },
           "configurations": {
             "production": {
               "buildTarget": "contingency-pos:build:production"

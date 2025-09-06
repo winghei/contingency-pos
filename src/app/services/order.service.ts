@@ -160,6 +160,7 @@ export class OrderService {
     });
     this.resetPayment();
     this._currentStep.set("cart");
+    this.saveToStorage();
   }
 
   private updateCartTotals(items: CartItem[]): void {

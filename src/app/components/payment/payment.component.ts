@@ -12,6 +12,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { Router } from '@angular/router';
 
 import { OrderService } from '../../services/order.service';
 import { PaymentMethod } from '../../types/order.types';
@@ -42,6 +43,7 @@ export class PaymentComponent {
   private orderService = inject(OrderService);
   private snackBar = inject(MatSnackBar);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   // Form
   paymentForm: FormGroup;
@@ -199,6 +201,11 @@ export class PaymentComponent {
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
         });
+        
+        // Navigate back to quick order after successful payment
+        setTimeout(() => {
+          this.router.navigate(['/quick-order']);
+        }, 1500);
       } else {
         this.paymentStatus.set('error');
         this.errorMessage.set(result.error || 'Payment processing failed');

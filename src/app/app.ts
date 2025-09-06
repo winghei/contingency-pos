@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ProductService } from './services/product.service';
 import { OrderService } from './services/order.service';
+import { AuthService } from './services/auth.service';
 import { PwaInstallComponent } from './components/pwa-install/pwa-install.component';
 
 @Component({
@@ -26,8 +27,10 @@ export class App implements OnInit{
   // This will trigger localStorage loading for all saved data
   private productService = inject(ProductService);
   private orderService = inject(OrderService);
+  private authService = inject(AuthService);
 
   ngOnInit(): void {
+    // Initialize services - AuthService automatically loads from localStorage
     this.productService.loadProductsFromStorage();
     this.orderService.loadFromStorage();
   }

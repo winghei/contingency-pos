@@ -15,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { OrderService } from '../../services/order.service';
 import { PdfExportService } from '../../services/pdf-export.service';
@@ -42,6 +43,7 @@ import { Order, OrderStatus } from '../../types/order.types';
     MatChipsModule,
     MatDividerModule,
     MatTooltipModule,
+    MatSnackBarModule,
     ReactiveFormsModule,
   ],
 })
@@ -49,6 +51,7 @@ export class OrdersComponent {
   private orderService = inject(OrderService);
   private pdfExportService = inject(PdfExportService);
   private fb = inject(FormBuilder);
+  private snackBar = inject(MatSnackBar);
 
   // Filter form
   filterForm: FormGroup;
@@ -247,7 +250,11 @@ export class OrdersComponent {
   exportOrders(): void {
     const orders = this.filteredOrders();
     if (orders.length === 0) {
-      console.warn('No orders to export');
+      this.snackBar.open('No orders to export', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
       return;
     }
     
@@ -255,13 +262,31 @@ export class OrdersComponent {
     const dateStr = new Date().toISOString().split('T')[0];
     const filename = `orders-report-${dateStr}.pdf`;
     
-    this.pdfExportService.exportOrdersToPdf(orders, filename);
+    try {
+      this.pdfExportService.exportOrdersToPdf(orders, filename);
+      this.snackBar.open(`PDF exported successfully: ${filename}`, 'Close', {
+        duration: 4000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
+    } catch (error) {
+      console.error('PDF export failed:', error);
+      this.snackBar.open('Failed to export PDF. Please try again.', 'Close', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
+    }
   }
 
   exportOrderSummary(): void {
     const orders = this.filteredOrders();
     if (orders.length === 0) {
-      console.warn('No orders to export');
+      this.snackBar.open('No orders to export', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
       return;
     }
     
@@ -269,7 +294,21 @@ export class OrdersComponent {
     const dateStr = new Date().toISOString().split('T')[0];
     const filename = `orders-summary-${dateStr}.pdf`;
     
-    this.pdfExportService.exportOrderSummaryToPdf(orders, filename);
+    try {
+      this.pdfExportService.exportOrderSummaryToPdf(orders, filename);
+      this.snackBar.open(`PDF summary exported successfully: ${filename}`, 'Close', {
+        duration: 4000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
+    } catch (error) {
+      console.error('PDF summary export failed:', error);
+      this.snackBar.open('Failed to export PDF summary. Please try again.', 'Close', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
+    }
   }
 
   exportOrdersAsJson(): void {

@@ -1,9 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import jsPDF from 'jspdf';
 import { Order, OrderStatus } from '../types/order.types';
+import { FileUploadService } from './file-upload.service';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class PdfExportService {
+  private fileUploadService = inject(FileUploadService);
+  private authService = inject(AuthService);
   
   exportOrdersToPdf(orders: Order[], filename?: string): void {
     const doc = new jsPDF();
@@ -169,9 +173,38 @@ export class PdfExportService {
       doc.text('Contingency POS', margin, pageHeight - 8);
     }
 
-    // Save the PDF
+    // Generate PDF and save locally first
     const defaultFilename = `orders-list-${new Date().toISOString().split('T')[0]}.pdf`;
-    doc.save(filename || defaultFilename);
+    const finalFilename = filename || defaultFilename;
+    
+    // Save PDF locally first (this should always work)
+    try {
+      doc.save(finalFilename);
+      console.log('PDF exported successfully:', finalFilename);
+    } catch (error) {
+      console.error('Failed to save PDF locally:', error);
+      return;
+    }
+    
+    // Try to upload to backend as well (only if user is authenticated)
+    const isAuthenticated = this.authService.isLoggedIn();
+    const username = this.authService.getCurrentUsername();
+    console.log('Authentication check:', { isAuthenticated, username });
+    
+    if (isAuthenticated) {
+      console.log('User is authenticated, attempting backend upload...');
+      const pdfBlob = doc.output('blob');
+      this.fileUploadService.uploadPdf(pdfBlob, finalFilename).subscribe({
+        next: (response) => {
+          console.log('PDF also uploaded to backend successfully:', response);
+        },
+        error: (error) => {
+          console.warn('Failed to upload PDF to backend (local download still successful):', error);
+        }
+      });
+    } else {
+      console.log('User not authenticated, skipping backend upload');
+    }
   }
 
   exportOrderSummaryToPdf(orders: Order[], filename?: string): void {
@@ -257,8 +290,37 @@ export class PdfExportService {
       });
     }
 
-    // Save the PDF
+    // Generate PDF and save locally first
     const defaultFilename = `orders-summary-${new Date().toISOString().split('T')[0]}.pdf`;
-    doc.save(filename || defaultFilename);
+    const finalFilename = filename || defaultFilename;
+    
+    // Save PDF locally first (this should always work)
+    try {
+      doc.save(finalFilename);
+      console.log('PDF summary exported successfully:', finalFilename);
+    } catch (error) {
+      console.error('Failed to save PDF summary locally:', error);
+      return;
+    }
+    
+    // Try to upload to backend as well (only if user is authenticated)
+    const isAuthenticated = this.authService.isLoggedIn();
+    const username = this.authService.getCurrentUsername();
+    console.log('Authentication check for summary:', { isAuthenticated, username });
+    
+    if (isAuthenticated) {
+      console.log('User is authenticated, attempting backend upload for summary...');
+      const pdfBlob = doc.output('blob');
+      this.fileUploadService.uploadPdf(pdfBlob, finalFilename).subscribe({
+        next: (response) => {
+          console.log('PDF summary also uploaded to backend successfully:', response);
+        },
+        error: (error) => {
+          console.warn('Failed to upload PDF summary to backend (local download still successful):', error);
+        }
+      });
+    } else {
+      console.log('User not authenticated, skipping backend upload for summary');
+    }
   }
 }

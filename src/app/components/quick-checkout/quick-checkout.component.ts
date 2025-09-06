@@ -101,9 +101,9 @@ export class QuickCheckoutComponent {
       this.orderService.setReceivedAmount(this.receivedAmount());
       
       // Process the payment
-      const success = await this.orderService.processPayment();
+      const result = await this.orderService.processPayment();
       
-      if (success) {
+      if (result.success) {
         // Show success message with change information
         const change = this.changeAmount();
         let message = 'Payment successful!';
@@ -119,7 +119,7 @@ export class QuickCheckoutComponent {
         // Navigate back to quick order immediately
         this.router.navigate(['/quick-order']);
       } else {
-        this.snackBar.open('Payment failed. Please try again.', 'Close', { duration: 3000 });
+        this.snackBar.open(result.error || 'Payment failed. Please try again.', 'Close', { duration: 3000 });
       }
     } catch (error) {
       console.error('Payment processing error:', error);

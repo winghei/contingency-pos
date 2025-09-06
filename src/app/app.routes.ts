@@ -1,15 +1,33 @@
-import { inject } from "@angular/core";
-import { Router, Routes } from "@angular/router";
-import { ProductService } from "./services/product.service";
+import { Routes } from "@angular/router";
+import { authGuard } from "./guards/auth.guard";
 
 export const routes: Routes = [
   {
+    path: "login",
+    loadComponent: () =>
+      import("./components/login/login.component").then(
+        (m) => m.LoginComponent
+      ),
+  },
+  {
     path: "",
-    redirectTo: "/quick-order",
-    pathMatch: "full",
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import("./components/quick-order/quick-order.component").then(
+        (m) => m.QuickOrderComponent
+      ),
+  },
+  {
+    path: "quick-order",
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import("./components/quick-order/quick-order.component").then(
+        (m) => m.QuickOrderComponent
+      ),
   },
   {
     path: "management",
+    canActivate: [authGuard],
     loadComponent: () =>
       import(
         "./components/product-management/product-management.component"
@@ -17,31 +35,15 @@ export const routes: Routes = [
   },
   {
     path: "orders",
+    canActivate: [authGuard],
     loadComponent: () =>
       import("./components/orders/orders.component").then(
         (m) => m.OrdersComponent
       ),
   },
   {
-    path: "quick-order",
-    canActivate: [() => {
-      const productService = inject(ProductService);
-      const router = inject(Router);
-      
-      if (productService.productCount() > 0) {
-        return true;
-      } else {
-        router.navigate(['/management']);
-        return false;
-      }
-    }],
-    loadComponent: () =>
-      import("./components/quick-order/quick-order.component").then(
-        (m) => m.QuickOrderComponent
-      ),
-  },
-  {
     path: "quick-checkout",
+    canActivate: [authGuard],
     loadComponent: () =>
       import("./components/quick-checkout/quick-checkout.component").then(
         (m) => m.QuickCheckoutComponent
@@ -49,9 +51,18 @@ export const routes: Routes = [
   },
   {
     path: "scraper",
+    canActivate: [authGuard],
     loadComponent: () =>
       import("./components/scraper/scraper.component").then(
         (m) => m.ScraperComponent
+      ),
+  },
+  {
+    path: "files",
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import("./components/file-manager/file-manager.component").then(
+        (m) => m.FileManagerComponent
       ),
   },
   // Legacy redirect for existing bookmarks
@@ -62,6 +73,6 @@ export const routes: Routes = [
   },
   {
     path: "**",
-    redirectTo: "/management",
+    redirectTo: "/login",
   },
 ];
