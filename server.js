@@ -5,12 +5,16 @@ const fs = require('fs').promises;
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from dist directory
+const DIST_DIR = path.join(__dirname, 'dist', 'contingency-pos', 'browser');
+app.use(express.static(DIST_DIR));
 
 // Ensure uploads directory exists
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
@@ -590,6 +594,12 @@ app.get('/api/users', async (req, res) => {
     console.error('Get users error:', error);
     res.status(500).json({ error: 'Failed to retrieve users' });
   }
+});
+
+// Fallback route for Angular client-side routing
+// This should be the last route before error handling
+app.use((req, res) => {
+  res.sendFile(path.join(DIST_DIR, 'index.html'));
 });
 
 // Error handling middleware
