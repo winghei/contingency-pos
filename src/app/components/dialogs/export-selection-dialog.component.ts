@@ -49,11 +49,80 @@ export interface ExportSelectionDialogData {
     
     mat-dialog-content {
       min-width: 500px;
+      max-width: 90vw;
       max-height: 400px;
+      padding: 16px;
     }
     
     mat-list {
       padding-top: 0;
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      mat-dialog-content {
+        min-width: 320px;
+        max-width: 95vw;
+        max-height: 60vh;
+        padding: 12px;
+      }
+      
+      .export-item {
+        min-height: 80px;
+        padding: 12px 8px;
+      }
+      
+      .export-item mat-icon[matListItemIcon] {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+      
+      h2[mat-dialog-title] {
+        font-size: 20px;
+        padding: 16px 12px 8px 12px;
+      }
+      
+      mat-dialog-content p {
+        font-size: 14px;
+        margin-bottom: 16px;
+        padding: 0 8px;
+      }
+      
+      mat-dialog-actions {
+        padding: 8px 12px 16px 12px;
+      }
+      
+      mat-dialog-actions button {
+        min-height: 44px;
+        font-size: 16px;
+      }
+    }
+    
+    /* Extra small screens */
+    @media (max-width: 480px) {
+      mat-dialog-content {
+        min-width: 300px;
+        max-width: 98vw;
+        max-height: 70vh;
+        padding: 8px;
+      }
+      
+      .export-item {
+        min-height: 90px;
+        padding: 16px 8px;
+      }
+      
+      .export-item mat-icon[matListItemIcon] {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+      
+      mat-dialog-content p {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,

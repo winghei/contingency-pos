@@ -142,8 +142,10 @@ export interface ExportManagementDialogData {
     
     mat-dialog-content {
       min-width: 500px;
+      max-width: 90vw;
       max-height: 500px;
       overflow-y: auto;
+      padding: 16px;
     }
     
     mat-list {
@@ -152,6 +154,122 @@ export interface ExportManagementDialogData {
     
     mat-dialog-actions {
       justify-content: space-between;
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      mat-dialog-content {
+        min-width: 320px;
+        max-width: 95vw;
+        max-height: 70vh;
+        padding: 12px;
+      }
+      
+      .export-item {
+        min-height: 80px;
+        padding: 12px 8px;
+      }
+      
+      .export-item mat-icon[matListItemIcon] {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+      
+      .mat-mdc-list-item-meta {
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-end;
+      }
+      
+      .mat-mdc-list-item-meta button {
+        min-width: 44px;
+        min-height: 44px;
+      }
+      
+      .mat-mdc-list-item-meta button mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+      
+      h2[mat-dialog-title] {
+        font-size: 20px;
+        padding: 16px 12px 8px 12px;
+      }
+      
+      .user-context {
+        display: block;
+        margin-top: 4px;
+      }
+      
+      .exports-header {
+        padding: 0 8px;
+        margin-bottom: 12px;
+      }
+      
+      .exports-header p {
+        font-size: 14px;
+        line-height: 1.4;
+      }
+      
+      .read-only-notice {
+        font-size: 11px;
+        margin-top: 2px;
+      }
+      
+      mat-dialog-actions {
+        padding: 8px 12px 16px 12px;
+      }
+      
+      mat-dialog-actions button {
+        min-height: 44px;
+        font-size: 16px;
+      }
+    }
+    
+    /* Extra small screens */
+    @media (max-width: 480px) {
+      mat-dialog-content {
+        min-width: 300px;
+        max-width: 98vw;
+        max-height: 75vh;
+        padding: 8px;
+      }
+      
+      .export-item {
+        min-height: 90px;
+        padding: 16px 8px;
+      }
+      
+      .export-item mat-icon[matListItemIcon] {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+      
+      .mat-mdc-list-item-meta {
+        gap: 8px;
+      }
+      
+      .mat-mdc-list-item-meta button {
+        min-width: 48px;
+        min-height: 48px;
+      }
+      
+      .mat-mdc-list-item-meta button mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+      
+      .exports-header p {
+        font-size: 16px;
+      }
+      
+      .read-only-notice {
+        font-size: 12px;
+      }
     }
     
     .user-context {

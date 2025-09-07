@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   inject,
   signal,
+  computed,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
@@ -52,6 +53,12 @@ export class ProductManagementComponent {
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
+
+  // Computed signal to check if current user is sherwin
+  protected isSherwinUser = computed(() => {
+    const currentUser = this.authService.getCurrentUsername();
+    return currentUser === 'sherwin';
+  });
 
   openProductForm(): void {
     const dialogRef = this.dialog.open(ProductFormComponent, {
@@ -245,7 +252,8 @@ export class ProductManagementComponent {
       // First, show user selection dialog
       const userSelectionDialog = this.dialog.open(UserSelectionDialogComponent, {
         width: '500px',
-        maxWidth: '90vw',
+        maxWidth: '95vw',
+        maxHeight: '80vh',
         data: { 
           currentUser: currentUser,
           title: 'Select User to View Exports'
@@ -261,7 +269,8 @@ export class ProductManagementComponent {
             
             const exportManagementDialog = this.dialog.open(ExportManagementDialogComponent, {
               width: '600px',
-              maxWidth: '90vw',
+              maxWidth: '95vw',
+              maxHeight: '80vh',
               data: { 
                 exports: savedExports,
                 username: selectedUser,
@@ -319,6 +328,7 @@ export class ProductManagementComponent {
     return new Promise((resolve) => {
       const dialog = this.dialog.open(ExportMethodDialogComponent, {
         width: '400px',
+        maxWidth: '95vw',
         data: { title: 'Export Products' }
       });
 
@@ -332,6 +342,7 @@ export class ProductManagementComponent {
     return new Promise((resolve) => {
       const dialog = this.dialog.open(ImportMethodDialogComponent, {
         width: '400px',
+        maxWidth: '95vw',
         data: { title: 'Import Products' }
       });
 
@@ -345,6 +356,7 @@ export class ProductManagementComponent {
     return new Promise((resolve) => {
       const dialog = this.dialog.open(ExportNameDialogComponent, {
         width: '400px',
+        maxWidth: '95vw',
         data: { title: 'Export Name' }
       });
 
@@ -358,6 +370,8 @@ export class ProductManagementComponent {
     return new Promise((resolve) => {
       const dialog = this.dialog.open(ExportSelectionDialogComponent, {
         width: '600px',
+        maxWidth: '95vw',
+        maxHeight: '80vh',
         data: { exports }
       });
 

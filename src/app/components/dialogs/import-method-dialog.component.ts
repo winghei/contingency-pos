@@ -54,10 +54,71 @@ export interface ImportMethodDialogData {
       justify-content: flex-start;
       padding: 16px;
       min-height: 60px;
+      width: 100%;
+      box-sizing: border-box;
     }
     
     mat-dialog-content {
       min-width: 300px;
+      max-width: 90vw;
+      padding: 16px;
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      mat-dialog-content {
+        min-width: 280px;
+        max-width: 95vw;
+        padding: 12px;
+      }
+      
+      .import-option {
+        padding: 20px 16px;
+        min-height: 70px;
+        font-size: 16px;
+        border-radius: 8px;
+      }
+      
+      .import-option mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+      
+      h2[mat-dialog-title] {
+        font-size: 20px;
+        padding: 16px 12px 8px 12px;
+      }
+      
+      mat-dialog-actions {
+        padding: 8px 12px 16px 12px;
+      }
+      
+      mat-dialog-actions button {
+        min-height: 44px;
+        font-size: 16px;
+      }
+    }
+    
+    /* Extra small screens */
+    @media (max-width: 480px) {
+      mat-dialog-content {
+        min-width: 260px;
+        max-width: 98vw;
+        padding: 8px;
+      }
+      
+      .import-option {
+        padding: 24px 16px;
+        min-height: 80px;
+        font-size: 18px;
+      }
+      
+      .import-option mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,

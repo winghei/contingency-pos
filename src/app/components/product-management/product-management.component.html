@@ -73,10 +73,12 @@
       <mat-icon>download</mat-icon>
       Load Demo Data
     </button> -->
-    <button mat-menu-item (click)="loadDitschProducts()">
-      <mat-icon>language</mat-icon>
-      Load Ditsch Products
-    </button>
+    @if (isSherwinUser()) {
+      <button mat-menu-item (click)="loadDitschProducts()">
+        <mat-icon>language</mat-icon>
+        Load Ditsch Products
+      </button>
+    }
     <button mat-menu-item (click)="clearData()">
       <mat-icon>clear_all</mat-icon>
       Clear All Products
